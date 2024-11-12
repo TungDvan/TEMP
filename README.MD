@@ -76,34 +76,18 @@ for i in range(len(ans)):
 # PRINT_INPUT_HEX
 
 ```PYTHON
-a = input("Nhap chuoi: ")
-n = int(input("Nhap chieu dai mong muon: "))
-print(f"Chieu dai cua chuoi la {n} = {hex(n)}")
-
-b = "KCSC{"
-
-b += a
-b += "}"
-a = b
-
-if n <= len(a):
-    for i in range(n):
-        if i % 10 == 9: print(f'0x{ord(a[i]):02x}, ')
-        else: print(f'0x{ord(a[i]):02x},', end = ' ')
-    print()
-    for i in range(n): print(end = a[i])
-    print(end = "\nChuoi goc: ")            
-    for i in range(len(a)): print(f'{a[i]}', end = '')
-
-else:
-    tmp = ["\0"] * n
-    for i in range(len(a)): tmp[i] = a[i]
-    for i in range(len(tmp)):
-        if i % 10 == 9: print(f'0x{ord(tmp[i]):02x}, ')
-        else: print(f'0x{ord(tmp[i]):02x},', end = ' ')
-    print()
-    for i in range(len(a)): print(end = a[i])
-    print(end = "\nChuoi goc: ")
+form_flag = 'KCSC'
+s = "SeradipityLoveBHP"
+n = int(input("Nhap chieu dai cua chuoi: "))
+n = n - len(form_flag) - 2
+ans = ''
+for i in range(n):
+    ans += s[i % len(s)]
+s = form_flag + "{" + ans + "}"
+print(s)
+for i in range(len(s)):
+    if i % 10 == 9: print(f'0x{ord(s[i]):02x}', end = ',\n')
+    else: print(f'0x{ord(s[i]):02x}', end = ', ')
 # all_char = [
 #     0x7a, 0x78, 0x63, 0x76, 0x62, 0x6e, 0x6d, 0x2c, 0x2e, 0x2f,
 #     0x5a, 0x58, 0x43, 0x56, 0x42, 0x4e, 0x4d, 0x3c, 0x3e, 0x3f,
