@@ -237,7 +237,7 @@ flag_en = [
 import sys
 from ctypes import *
 
-def decipher(v, k):
+def decipher(v, k): 
     y = c_uint32(v[0])
     z = c_uint32(v[1])
     sum = c_uint32(0xc6ef3720)
