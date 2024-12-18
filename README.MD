@@ -135,3 +135,137 @@ if s.check() == sat:
     for c in flag:
         print(m[c].as_long())
 ```
+
+# MÃ HÓA VÀ GIẢI MÃ AES.
+
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+
+# Hàm mã hóa
+def encrypt_aes(key, iv, plaintext_bytes):
+    cipher = AES.new(key, AES.MODE_CBC, iv)  # Tạo AES cipher với chế độ CBC
+    ciphertext = cipher.encrypt(pad(plaintext_bytes, AES.block_size))  # Thêm padding và mã hóa
+    return ciphertext
+
+# Hàm giải mã
+def decrypt_aes(key, iv, ciphertext):
+    cipher = AES.new(key, AES.MODE_CBC, iv)  # Tạo AES cipher với chế độ CBC
+    plaintext_bytes = unpad(cipher.decrypt(ciphertext), AES.block_size)  # Giải mã và bỏ padding
+    return plaintext_bytes
+
+# Chương trình chính
+if __name__ == "__main__":
+    try:
+        # Nhập khóa AES (dạng hex, 64 ký tự = 256-bit)
+        key_hex = input("Nhập khóa AES (hex, 64 ký tự): ").strip()
+        key = bytes.fromhex(key_hex)  # Chuyển đổi từ hex sang bytes
+
+        if len(key) != 32:  # Kiểm tra độ dài của khóa
+            raise ValueError("Khóa AES phải có độ dài 256-bit (64 ký tự hex).")
+
+        # Nhập IV (dạng hex, 32 ký tự = 128-bit)
+        iv_hex = input("Nhập IV (hex, 32 ký tự): ").strip()
+        iv = bytes.fromhex(iv_hex)  # Chuyển đổi từ hex sang bytes
+
+        if len(iv) != 16:  # Kiểm tra độ dài của IV
+            raise ValueError("IV phải có độ dài 128-bit (32 ký tự hex).")
+
+        # Nhập chuỗi cần mã hóa (dạng hex)
+        plaintext_hex = input("Nhập chuỗi cần mã hóa (hex): ").strip()
+        plaintext_bytes = bytes.fromhex(plaintext_hex)  # Chuyển chuỗi hex thành bytes
+
+        # Mã hóa
+        ciphertext = encrypt_aes(key, iv, plaintext_bytes)
+        print("Chuỗi đã mã hóa (hex):", ciphertext.hex())
+
+        # Giải mã
+        decrypted_bytes = decrypt_aes(key, iv, ciphertext)
+        decrypted_hex = decrypted_bytes.hex()  # Chuyển bytes về dạng hex string
+        print("Chuỗi đã giải mã (hex):", decrypted_hex)
+
+    except ValueError as e:
+        print(f"Lỗi: {e}")
+
+```
+
+# BYTE, HEX,...
+
+```PYTHON
+flag_1 = list(bytes.fromhex('7E54595F09434B0F4A5D59757B514A5B6D550D0F0C765B7D45'))
+flag_2 = list(b'\x7fELF\x02\x01\x01\x00\x00\x00')
+```
+
+# RC4
+
+```python
+def RC4(key, cipher):
+    map = [i for i in range(256)]
+    ans = []
+    tmp1 = 0
+    for i in range(256):
+        tmp1 = (tmp1 + map[i] + key[i % len(key)]) & 0xFF
+        map[i], map[tmp1] = map[tmp1], map[i]
+    tmp1, tmp2 = 0, 0
+    for i in range(len(cipher)):
+        tmp1 = (tmp1 + 1) & 0xFF
+        tmp2 = (tmp2 + map[tmp1]) & 0xFF
+        map[tmp1], map[tmp2] = map[tmp2], map[tmp1]
+        ans.append(cipher[i] ^ map[(map[tmp1] + map[tmp2]) & 0xFF])
+    return ans
+```
+
+# XTEA
+
+```python
+cipher = [
+    # 0x56, 0x64, 0x6C, 0x4B, 0x65, 0x39, 0x75, 0x70, 0x66, 0x42, 
+    # 0x46, 0x6B, 0x6B, 0x4F, 0x30, 0x4C
+    0x4b6c6456, 0x70753965, 0x6b464266, 0x4c304f6b
+]
+
+flag_en = [
+    # 0x19, 0x2C, 0x30, 0x2A, 0x79, 0xF9, 0x54, 0x02, 0xB3, 0xA9, 
+    # 0x6C, 0xD6, 0x91, 0x80, 0x95, 0x04, 0x29, 0x59, 0xE8, 0xA3, 
+    # 0x0F, 0x79, 0xBD, 0x86, 0xAF, 0x05, 0x13, 0x6C, 0xFE, 0x75, 
+    # 0xDB, 0x2B, 0xAE, 0xE0, 0xF0, 0x5D, 0x88, 0x4B, 0x86, 0x89, 
+    # 0x33, 0x66, 0xAC, 0x45, 0x9A, 0x6C, 0x78, 0xA6
+    0x2a302c19, 0x0254f979, 0xd66ca9b3, 0x04958091, 0xa3e85929, 0x86bd790f, 0x6c1305af, 0x2bdb75fe, 0x5df0e0ae, 0x89864b88, 
+    0x45ac6633, 0xa6786c9a
+]
+
+import sys
+from ctypes import *
+
+def decipher(v, k):
+    y = c_uint32(v[0])
+    z = c_uint32(v[1])
+    sum = c_uint32(0xc6ef3720)
+    delta = 0x9e3779b9
+    n = 32
+    w = [0,0]
+
+    while(n>0):
+        z.value -= ( y.value << 4 ) + k[2] ^ y.value + sum.value ^ ( y.value >> 5 ) + k[3]
+        y.value -= ( z.value << 4 ) + k[0] ^ z.value + sum.value ^ ( z.value >> 5 ) + k[1]
+        sum.value -= delta
+        n -= 1
+
+    w[0] = y.value
+    w[1] = z.value
+    return w
+
+if __name__ == "__main__":
+    ans = []
+    for i in range(0, len(flag_en), 2):
+        v = flag_en[i:i+2:1]
+        k = cipher
+        tmp = decipher(v, k)
+        ans += tmp
+
+    for i in ans:
+        while i: 
+            print(end = chr(i & 0xff))
+            i >>= 8
+    # PTITCTF{bdc90e23aa0415e94d0ac46a938efcf3}
+```
