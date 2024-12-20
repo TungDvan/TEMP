@@ -269,3 +269,29 @@ if __name__ == "__main__":
             i >>= 8
     # PTITCTF{bdc90e23aa0415e94d0ac46a938efcf3}
 ```
+
+# MÃ HÓA BASE64
+
+```PYTHON
+# MÃ HÓA
+import base64
+data = [
+
+]
+data_bytes = bytes(data)
+base64_encoded = base64.b64encode(data_bytes)
+base64_string = base64_encoded.decode('utf-8')
+print(base64_string)
+```
+
+```PYTHON
+# GIẢI MÃ
+import base64
+base64_string = "SGVsbG8sIHdvcmxkIQ=="
+decoded_bytes = base64.b64decode(base64_string)
+print(decoded_bytes)
+decoded_bytes = list(decoded_bytes)
+for i in range(len(decoded_bytes)):
+    if i % 10 == 9: print(f'0x{decoded_bytes[i]:02X}', end = ',\n')
+    else: print(f'0x{decoded_bytes[i]:02X}', end = ', ')
+```
