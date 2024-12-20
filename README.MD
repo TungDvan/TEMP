@@ -139,54 +139,72 @@ if s.check() == sat:
 # MÃ HÓA VÀ GIẢI MÃ AES.
 
 ```python
+# mã hóa
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
-# Hàm mã hóa
 def encrypt_aes(key, iv, plaintext_bytes):
-    cipher = AES.new(key, AES.MODE_CBC, iv)  # Tạo AES cipher với chế độ CBC
-    ciphertext = cipher.encrypt(pad(plaintext_bytes, AES.block_size))  # Thêm padding và mã hóa
+    cipher = AES.new(key, AES.MODE_CBC, iv) 
+    ciphertext = cipher.encrypt(pad(plaintext_bytes, AES.block_size)) 
     return ciphertext
 
-# Hàm giải mã
 def decrypt_aes(key, iv, ciphertext):
-    cipher = AES.new(key, AES.MODE_CBC, iv)  # Tạo AES cipher với chế độ CBC
-    plaintext_bytes = unpad(cipher.decrypt(ciphertext), AES.block_size)  # Giải mã và bỏ padding
+    cipher = AES.new(key, AES.MODE_CBC, iv)  
+    plaintext_bytes = unpad(cipher.decrypt(ciphertext), AES.block_size)  
     return plaintext_bytes
 
-# Chương trình chính
 if __name__ == "__main__":
     try:
-        # Nhập khóa AES (dạng hex, 64 ký tự = 256-bit)
-        key_hex = input("Nhập khóa AES (hex, 64 ký tự): ").strip()
-        key = bytes.fromhex(key_hex)  # Chuyển đổi từ hex sang bytes
-
-        if len(key) != 32:  # Kiểm tra độ dài của khóa
-            raise ValueError("Khóa AES phải có độ dài 256-bit (64 ký tự hex).")
-
-        # Nhập IV (dạng hex, 32 ký tự = 128-bit)
-        iv_hex = input("Nhập IV (hex, 32 ký tự): ").strip()
-        iv = bytes.fromhex(iv_hex)  # Chuyển đổi từ hex sang bytes
-
-        if len(iv) != 16:  # Kiểm tra độ dài của IV
-            raise ValueError("IV phải có độ dài 128-bit (32 ký tự hex).")
-
-        # Nhập chuỗi cần mã hóa (dạng hex)
-        plaintext_hex = input("Nhập chuỗi cần mã hóa (hex): ").strip()
-        plaintext_bytes = bytes.fromhex(plaintext_hex)  # Chuyển chuỗi hex thành bytes
-
-        # Mã hóa
+        key_hex = input("Nhap khoa AES (64 ky tu): ").strip()
+        key = bytes.fromhex(key_hex) 
+        if len(key) != 32:  
+            raise ValueError("Khoa AES phai co do dai 256-bit (64 ky tu dang hex).")
+        iv_hex = input("Nhap IV (hex, 32 ky tu): ").strip()
+        iv = bytes.fromhex(iv_hex)
+        if len(iv) != 16:
+            raise ValueError("IV phai co do dai 128-bit (32 ky tu hex).")
+        plaintext_hex = input("Nhap chuoi can ma hoa (hex): ").strip()
+        plaintext_bytes = bytes.fromhex(plaintext_hex) 
         ciphertext = encrypt_aes(key, iv, plaintext_bytes)
-        print("Chuỗi đã mã hóa (hex):", ciphertext.hex())
+        print("Chuoi da ma hoa (hex):", ciphertext.hex())
+    except ValueError as e:
+        print(f"Loi: {e}")
+```
 
-        # Giải mã
-        decrypted_bytes = decrypt_aes(key, iv, ciphertext)
-        decrypted_hex = decrypted_bytes.hex()  # Chuyển bytes về dạng hex string
-        print("Chuỗi đã giải mã (hex):", decrypted_hex)
+```python
+# giải mã
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+
+def encrypt_aes(key, iv, plaintext_bytes):
+    cipher = AES.new(key, AES.MODE_CBC, iv) 
+    ciphertext = cipher.encrypt(pad(plaintext_bytes, AES.block_size)) 
+    return ciphertext
+
+def decrypt_aes(key, iv, ciphertext):
+    cipher = AES.new(key, AES.MODE_CBC, iv)  
+    plaintext_bytes = unpad(cipher.decrypt(ciphertext), AES.block_size)  
+    return plaintext_bytes
+
+if __name__ == "__main__":
+    try:
+        key_hex = input("Nhap khoa AES (64 ky tu): ").strip()
+        key = bytes.fromhex(key_hex) 
+        if len(key) != 32:  
+            raise ValueError("Khoa AES phai co do dai 256-bit (64 ky tu dang hex).")
+        iv_hex = input("Nhap IV (hex, 32 ky tu): ").strip()
+        iv = bytes.fromhex(iv_hex)
+        if len(iv) != 16:
+            raise ValueError("IV phai co do dai 128-bit (32 ky tu hex).")
+        plaintext_hex = input("Nhap chuoi can ma hoa (hex): ").strip()
+        plaintext_bytes = bytes.fromhex(plaintext_hex) 
+        decrypted_bytes = decrypt_aes(key, iv, plaintext_bytes)
+        decrypted_hex = decrypted_bytes.hex()
+        print("Chuoi da giai ma (hex):", decrypted_bytes)
+        print("Chuoi da giai ma (hex):", decrypted_hex)
 
     except ValueError as e:
         print(f"Lỗi: {e}")
-
 ```
 
 # BYTE, HEX,...
